@@ -26,10 +26,10 @@ class Chker {
 }
 
 class Count {
-	
+
 	private int[] counts = new int[52];
-	
-	public int[] countString(String string) {
+
+	public void countString(String string) {
 
 		for (int i = 0; i < string.length(); i++) {
 
@@ -39,7 +39,6 @@ class Count {
 				counts[string.charAt(i) - 'a' + 26]++;
 			}
 		}
-		return counts;
 	}
 
 	public void displayCounts() {
@@ -72,14 +71,12 @@ public class ReplaceText {
 
 		Chker chker = new Chker();
 		Count count = new Count();
+		chker.isTxt(args);
+		// Check if source file exists
+		File sourceFile = new File(args[2]);
+		chker.isSourceExist(args, sourceFile);
 
 		if (args.length == 4) {// targetFile이 있을경우 진행
-			// Check if source file exists
-
-			chker.isTxt(args);
-
-			File sourceFile = new File(args[2]);
-			chker.isSourceExist(args, sourceFile);
 
 			// Check if target file exists
 			File targetFile = new File(args[3]);
@@ -88,7 +85,6 @@ public class ReplaceText {
 			// Create input and output files
 			Scanner input = new Scanner(sourceFile);
 			PrintWriter output = new PrintWriter(targetFile);
-			int counts[] = null;
 			System.out.println("텍스트 파일 각 행마다의 알파벳 갯수");
 
 			while (input.hasNext()) {
@@ -97,21 +93,18 @@ public class ReplaceText {
 				String s2 = s1.replaceAll(args[0], args[1]);
 				output.println(s2);
 				count.countString(s2);
-				count.displayCounts();
-				System.out.println("");
-
 			}
+			count.displayCounts();
+			System.out.println("");
 
 			input.close();
 			output.close();
 		}
 
 		else if (args.length == 3) {// 입력값이 3개일때, 즉 targerFile설정이 안되었을때.
-			chker.isTxt(args);
-			File sourceFile = new File(args[2]);
-			chker.isSourceExist(args, sourceFile);
+
 			// 임시 파일 생성 후 JVM종료시 파일 삭제.
-			File targetFile = null;
+			File targetFile = new File("target.txt");
 			targetFile.deleteOnExit();
 
 			// Create input and output files
@@ -125,18 +118,20 @@ public class ReplaceText {
 				output.println(s2);
 
 			}
+			input.close();
+			output.close();
 
 			Scanner input2 = new Scanner(targetFile);
 			PrintWriter output2 = new PrintWriter(sourceFile);
 
-			while (input.hasNext()) {
+			while (input2.hasNext()) {
 				String s1 = input2.nextLine();
-				String s2 = s1;
+				String s2 = new String(s1);
 				output2.println(s2);
 			}
+			input2.close();
+			output2.close();
 
-			input.close();
-			output.close();
 		}
 
 		else {// 뭔가 입력값이 잘못되었을때 어떻게 적어야 하는지 출력!
@@ -148,6 +143,5 @@ public class ReplaceText {
 		}
 
 	}
-
 
 }
